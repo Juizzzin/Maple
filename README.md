@@ -29,7 +29,7 @@ Unlike Windows, macOS and Linux require you to manually grant "Execute" permissi
 If you prefer to run with Python or build the binary yourself:
 **Clone & Run**
    ```bash
-   https://github.com/Juizzzin/Maple.git
+   git clone https://github.com/Juizzzin/Maple.git
    cd Maple
    python3 maple.py
    ```
