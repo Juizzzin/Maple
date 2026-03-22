@@ -89,7 +89,7 @@ def main():
     app = Lazure()
 
     print(f"{RED}MAPLE{GRAY} | {platform.system().upper()}{RESET}")
-    print(f"{RED}{"─" * 48}{RESET}")
+    print(f"{RED}{'─' * 48}{RESET}")
 
     try:
         blueprint_input = input(f"{RED}[?]{RESET} Paste blueprint or press ENTER to generate: ").strip()
