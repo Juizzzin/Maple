@@ -3,7 +3,7 @@
 </p>
 
 # Maple
-**Maple** is a cross-platform utility to snapshot and restore your installed software. It generates a tiny, portable blueprint string that you can use to replicate your environment on any other machine.
+**Maple** is a cross-platform utility to snapshot and restore your installed software. It generates a tiny, portable blueprint string that you can use to replicate your environment on any other machine - currently only on the same OS.
 
 ## Quick Start
 
