@@ -4,7 +4,7 @@ RED = "\033[91m"
 GRAY = "\033[90m"
 RESET = "\033[0m"
 
-class Lazure:
+class Maple:
     def __init__(self):
         self.system = platform.system().lower()
         self.manager = self._get_manager()
@@ -86,7 +86,7 @@ class Lazure:
             subprocess.run(["sudo", "apt", "install", "-y"] + pkgs)
 
 def main():
-    app = Lazure()
+    app = Maple()
 
     print(f"{RED}MAPLE{GRAY} | {platform.system().upper()}{RESET}")
     print(f"{RED}{'─' * 48}{RESET}")
