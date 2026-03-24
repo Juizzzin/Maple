@@ -24,7 +24,7 @@ It generates a small, portable blueprint string that can be used to replicate yo
 
 ### Windows
 
-1. Download `Maple.exe` from the [latest release](https://github.com/Juizzzin/Maple/releases)
+1. Download `Maple-windows.exe` from the [latest release](https://github.com/Juizzzin/Maple/releases)
 2. Run it via double-click or in PowerShell/CMD
 
 
@@ -34,12 +34,9 @@ macOS and Linux require manual permission to execute the binary.
 
 1. Download the appropriate binary (`Maple-macos` or `Maple-linux`)
 2. Open Terminal and navigate to your download folder
-3. Grant execute permission:
+3. Grant execute permission and run:
 ```bash
 chmod +x Maple-linux  # or Maple-macos
-```
-4. Run:
-```bash
 ./Maple-linux  # or Maple-macos
 ```
 
@@ -74,6 +71,7 @@ python3 maple.py
 
 ## Future Goals
 
+- Better compression
 - Cross-platform restore support  
 - Improved package detection and filtering  
 - Version-aware restores  
