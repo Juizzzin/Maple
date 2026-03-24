@@ -110,7 +110,7 @@ def main():
     app = Maple()
 
     print(f"{RED}MAPLE{GRAY} | {platform.system().upper()}{RESET}")
-    print(f"{RED}{"-" * 47}{RESET}") # For some reason pyinstaller doesent want me to use '─' and '\u2500'
+    print(f"{RED}{'-' * 47}{RESET}") # For some reason pyinstaller doesent want me to use '─' and '\u2500'
 
     try:
         blueprint_input = input(f"{RED}[?]{RESET} Paste blueprint or press ENTER to generate: ").strip()
