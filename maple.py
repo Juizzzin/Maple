@@ -1,4 +1,4 @@
-import platform, subprocess, json, tempfile, os, gzip, base64, sys
+import platform, subprocess, json, tempfile, os, zlib, base64, sys
 
 RED = "\033[91m"
 GRAY = "\033[90m"
@@ -18,6 +18,7 @@ class Maple:
     
     def is_system_package(self, pkg_id: str) -> bool:
         pkg_id = pkg_id.lower()
+        # List provided by AI. The filter is not verified and definetly not practical
         prefixes = [
             "microsoft.", "msix\\microsoft", "visual", "com.apple.",
             "libc", "libgcc", "libstdc++", "linux-", 
@@ -34,19 +35,39 @@ class Maple:
     
     def compress(self):
         self.pkgs.sort()
-        raw_data = "|".join(self.pkgs).encode("utf-8")
-        compressed = gzip.compress(raw_data)
-        return base64.urlsafe_b64encode(compressed).decode("utf-8").rstrip("=")
+        normalized = []
+        for pkg in self.pkgs:
+            if pkg.startswith("."): # If a package starts with .
+                pkg = "\\" + pkg
+            parts = pkg.split(".")
+            if len(parts) >= 2 and parts[0].lower() == parts[1].lower(): # Turns Brave.Brave into .Brave
+                pkg = "." + parts[1]
+            normalized.append(pkg)
+
+        raw = "\x1f".join(normalized).encode("utf-8")
+        compressed = zlib.compress(raw, level=9)
+        # b85 is shorter but adds charcters that my cause conflicts in terminals
+        # b64 is more terminal friendly but adds slightly more characters
+        # Maybe add this later to argparse functionallity
+        return base64.b64encode(compressed).decode("utf-8")
     
     def decompress(self, blueprint_str):
-        missing_padding = len(blueprint_str) % 4
-        if missing_padding:
-            blueprint_str += "=" * (4 - missing_padding)
-        data = base64.urlsafe_b64decode(blueprint_str)
-        decompressed = gzip.decompress(data).decode("utf-8")
-        parts = [p.strip() for p in decompressed.split("|") if p.strip()]
-        parts.sort()
-        return parts
+        try:
+            data = base64.b64decode(blueprint_str.encode("utf-8")) # See compression
+            decompressed = zlib.decompress(data).decode("utf-8")
+        except Exception as e:
+            raise ValueError("Invalid blueprint") from e
+        parts = [p for p in decompressed.split("\x1f") if p]
+
+        restored = []
+        for pkg in parts:
+            if pkg.startswith("\\."):
+                pkg = pkg[1:]
+            if pkg.startswith("."):
+                name = pkg[1:]
+                pkg = f"{name}.{name}"
+            restored.append(pkg)
+        return sorted(restored)
     
     def scanSystem(self):
         if self.manager == "winget":
@@ -78,7 +99,7 @@ class Maple:
         if self.manager == "winget":
             for id in pkgs:
                 print(f"{RED}[~]{RESET} Installing {id}...")
-                subprocess.run(["winget", "install", "--id", id, "--silent", "--accept-source-agreements", "--accept-package-agreements"], check=False)
+                subprocess.run(["winget", "install", "--id", id, "--silent", "--accept-source-agreements", "--accept-package-agreements"], check=False) # Kepp check on False else the install will break
         if self.manager == "brew":
             subprocess.run(["brew", "install"] + pkgs)
         if self.manager == "apt":
@@ -89,7 +110,7 @@ def main():
     app = Maple()
 
     print(f"{RED}MAPLE{GRAY} | {platform.system().upper()}{RESET}")
-    print(f"{RED}{'─' * 48}{RESET}")
+    print(f"{RED}{"─" * 47}{RESET}")
 
     try:
         blueprint_input = input(f"{RED}[?]{RESET} Paste blueprint or press ENTER to generate: ").strip()
