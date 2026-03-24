@@ -1,17 +1,24 @@
 # Use this if you want to see what your blueprint string actually contains
 
-import gzip
-import base64
+import zlib, base64
 
 def decompress(blueprint_str):
-    missing_padding = len(blueprint_str) % 4
-    if missing_padding:
-        blueprint_str += "=" * (4 - missing_padding)
-    data = base64.urlsafe_b64decode(blueprint_str)
-    decompressed = gzip.decompress(data).decode("utf-8")
-    parts = [p.strip() for p in decompressed.split("|") if p.strip()]
-    parts.sort()
-    return parts
+    try:
+        data = base64.b64decode(blueprint_str.encode("utf-8"))
+        decompressed = zlib.decompress(data).decode("utf-8")
+    except Exception as e:
+        raise ValueError("Invalid blueprint") from e
+    parts = [p for p in decompressed.split("\x1f") if p]
+
+    restored = []
+    for pkg in parts:
+        if pkg.startswith("\\."):
+            pkg = pkg[1:]
+        if pkg.startswith("."):
+            name = pkg[1:]
+            pkg = f"{name}.{name}"
+        restored.append(pkg)
+    return sorted(restored)
 
 def main():
     blueprint = input("Paste the blueprint string: ").strip()
